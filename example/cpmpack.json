@@ -1,0 +1,58 @@
+{
+    "format_version": "1",
+    "options": [
+      {
+        "name": "EXAMPLE_ENABLE_TESTING",
+        "description": "Load extra packages",
+        "default": "OFF"
+      }
+    ],
+    "translationsets": [
+      {
+        "name": "example",
+        "type": "executable",
+        "language": "cxx_std_20",
+        "dependencies": [
+          "nlohmann_json::nlohmann_json",
+          "fmt::fmt",
+          "cxxopts"
+        ]
+      }
+    ],
+    "packages": [
+        {
+            "name": "nlohmann_json",
+            "version": "3.11.3",
+            "github_repository": "nlohmann/json",
+            "options": [
+                "json_buildtests off"
+            ],
+            "cpmaddpackage_command": "cpmaddpackage"
+        },
+        {
+            "name": "fmt",
+            "version": "10.2.1",
+            "git_tag": "{VERSION}",
+            "github_repository": "fmtlib/fmt",
+            "cpmaddpackage_command": "cpmaddpackage",
+            "cmake_commands": "message(\"hello fmt\")"
+        },
+        {
+            "if": "EXAMPLE_ENABLE_TESTING",
+            "name": "Catch",
+            "version": "3.6.0",
+            "github_repository": "catchorg/Catch"
+        },
+        {
+            "name": "cxxopts",
+            "github_repository": "jarro2783/cxxopts",
+            "version": "2.2.1",
+            "options": [
+                "CXXOPTS_BUILD_EXAMPLES NO",
+                "CXXOPTS_BUILD_TESTS NO",
+                "CXXOPTS_ENABLE_INSTALL YES"
+            ],
+            "cmake_commands": "message(\"Hello cxxopts\")"
+        }
+    ]
+}
