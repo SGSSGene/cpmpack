@@ -4,6 +4,7 @@
 #include <cxxopts.hpp>
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
+#include <myLib/myLib.h>
 
 using json = nlohmann::json;
 
@@ -23,5 +24,6 @@ int main(int argc, char** argv) {
 
         fmt::print("{}\n", data.dump());
     }
+    fmt::print("f(): {}\n", f());
     return 0;
 }

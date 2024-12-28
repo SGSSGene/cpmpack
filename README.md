@@ -8,7 +8,7 @@ Must use [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake).
 
 ```cmake
 include(cmake/CPM.cmake)
-CPMAddPackage("gh:SGSSGene/cpmpack@1.0.0")
+CPMAddPackage("gh:SGSSGene/cpmpack@1.0.1")
 
 # Loads and adds all packages from the JSON file
 loadCPMPack("${CMAKE_CURRENT_SOURCE_DIR}/cpmpack.json")

@@ -300,22 +300,6 @@ function(fancyAdd)
             DESTINATION "${CMAKE_INSTALL_DATADIR}/${arg_NAME}/cmake"
             NAMESPACE "${arg_NAMESPACE}::"
         )
-
-        # Generate targetConfig.cmake file
-        set(Target ${arg_NAME})
-        set(Library ${arg_NAME})
-        set(CppVersion ${arg_CPP_VERSION})
-        set(InstallPrefix ${CMAKE_INSTALL_PREFIX})
-        configure_package_config_file(generic-config.cmake.in
-            ${arg_NAME}Config.cmake
-            INSTALL_DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-            PATH_VARS InstallPrefix
-        )
-        # Install targetConfig.cmake file
-        install(
-            FILES "${CMAKE_CURRENT_BINARY_DIR}/${arg_NAME}Config.cmake"
-            DESTINATION "${CMAKE_INSTALL_DATADIR}/${arg_NAME}/cmake/"
-        )
     endif()
 endfunction()
 
@@ -349,11 +333,10 @@ function(fancyAdd_StdLayout)
     endif()
 
 
-    file(GLOB_RECURSE SOURCE_FILES RELATIVE ${CMAKE_CURRENT_LIST_DIR} "src/${arg_NAME}/*.cpp")
-    file(GLOB_RECURSE HEADER_FILES RELATIVE ${CMAKE_CURRENT_LIST_DIR} "src/${arg_NAME}/*.h")
-    file(GLOB_RECURSE HEADER_FILES_INCL RELATIVE ${CMAKE_CURRENT_LIST_DIR} "include/${arg_NAME}/*.h")
+    file(GLOB_RECURSE SOURCE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "src/${arg_NAME}/*.cpp")
+    file(GLOB_RECURSE HEADER_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "src/${arg_NAME}/*.h")
+    file(GLOB_RECURSE HEADER_FILES_INCL RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "include/${arg_NAME}/*.h")
 
-#    set(HEADER_FILES "blub")
     if (NOT "${SOURCE_FILES}" STREQUAL "")
         set(SOURCE_FILES "SOURCE_FILES ${SOURCE_FILES}")
     endif()

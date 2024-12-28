@@ -5,6 +5,6 @@ cmake_minimum_required (VERSION 3.31)
 project(demo LANGUAGES CXX DESCRIPTION "demonstration of cpmpack")
 
 include(cmake/CPM.cmake)
-CPMAddPackage("gh:SGSSGene/cpmpack@1.0.0")
+CPMAddPackage("gh:SGSSGene/cpmpack@1.0.1")
 loadCPMPack("${CMAKE_CURRENT_SOURCE_DIR}/cpmpack.json")
 
