@@ -387,60 +387,6 @@ function(fancyAdd_StdLayout)
 
 endfunction()
 
-function(read_entry ITEM FIELD PREFIX VAR_OUT WITH_QUOTES AS_LIST)
-    set(RET_VALUE)
-    string(JSON TYPE_VALUE ERROR_VARIABLE JSON_ERROR TYPE ${ITEM} ${FIELD})
-
-    set(QUOTES "")
-    if (WITH_QUOTES)
-        set(QUOTES "\"")
-    endif()
-
-    # If not found, check if lower case can be found
-    if (NOT ${JSON_ERROR} MATCHES "^NOTFOUND$")
-        string(TOLOWER ${FIELD} FIELD)
-        string(JSON TYPE_VALUE ERROR_VARIABLE JSON_ERROR TYPE ${ITEM} ${FIELD})
-    endif()
-
-    if (NOT ${JSON_ERROR} MATCHES "^NOTFOUND$")
-        # nothing to do
-    elseif (${TYPE_VALUE} MATCHES "^STRING$")
-        string(JSON VALUE GET ${ITEM} ${FIELD})
-        if (NOT ${VALUE} MATCHES "^$")
-            set(RET_VALUE "${PREFIX}${QUOTES}${VALUE}${QUOTES}")
-        endif()
-    elseif (${TYPE_VALUE} MATCHES "^BOOLEAN$")
-        string(JSON VALUE GET ${ITEM} ${FIELD})
-        if (${VALUE} MATCHES "ON")
-            set(RET_VALUE "${PREFIX}ON")
-        else()
-            set(RET_VALUE "${PREFIX}OFF")
-        endif()
-
-    elseif (${TYPE_VALUE} MATCHES "^ARRAY$")
-        string(JSON ARRAY_LENGTH LENGTH ${ITEM} ${FIELD})
-        if (${ARRAY_LENGTH} EQUAL 0)
-            return()
-        endif()
-        MATH(EXPR ARRAY_LENGTH "${ARRAY_LENGTH}-1")
-
-        set(RET_VALUE ${PREFIX})
-        set(SEP " ")
-        if (AS_LIST)
-            set(SEP ";")
-        endif()
-
-        foreach (IDX RANGE ${ARRAY_LENGTH})
-            string(JSON VALUE GET ${ITEM} ${FIELD} ${IDX})
-            set(RET_VALUE "${RET_VALUE}${SEP}${QUOTES}${VALUE}${QUOTES}")
-        endforeach()
-    else()
-        message(FATAL_ERROR "Unexpected JSON type ${TYPE_VALUE} at position ${IDX} ${FIELD}")
-    endif()
-
-    set(${VAR_OUT} "${RET_VALUE}" PARENT_SCOPE)
-endfunction()
-
 function(read_translationset_section FILE_AS_STRING)
     # Iterate over it and declare all dependencies
     string(JSON number_of_objects LENGTH ${FILE_AS_STRING})
@@ -578,8 +524,8 @@ endfunction()
 
 macro(loadCPMPack file)
     message("Loading cpmpack: ${file}")
-    optionsFromFile("translationsets.json")
-    loadDependenciesFile("${CMAKE_CURRENT_SOURCE_DIR}/")
-    fancyAddFromFile("translationsets.json")
+    optionsFromFile("${file}")
+    loadDependenciesFile("${file}")
+    fancyAddFromFile("${file}")
 
 endmacro()
