@@ -246,6 +246,8 @@ function(fancyAdd)
         "${options}" "${oneValueArgs}" "${multiValueArgs}"
     )
 
+    string(MAKE_C_IDENTIFIER "${arg_NAME}" "arg_SAFENAME")
+
     if (NOT "${arg_LIBRARY}" STREQUAL "")
         set(arg_NAME "${arg_LIBRARY}")
         if ("${arg_SOURCE_FILES}" STREQUAL "")
@@ -268,7 +270,7 @@ function(fancyAdd)
     endif()
 
     if (NOT "${arg_HEADER_PATH_PREFIX}" STREQUAL "")
-        target_sources(${arg_NAME} ${TARGET_TYPE} FILE_SET ${arg_NAME}_headers TYPE HEADERS
+        target_sources(${arg_NAME} ${TARGET_TYPE} FILE_SET ${arg_SAFENAME}_headers TYPE HEADERS
             BASE_DIRS ${arg_HEADER_PATH_PREFIX}
             FILES ${arg_HEADER_FILES}
         )
@@ -296,7 +298,7 @@ function(fancyAdd)
         # Install headers
         install(TARGETS ${arg_NAME}
             EXPORT ${arg_NAME}
-            FILE_SET ${arg_NAME}_headers
+            FILE_SET ${arg_SAFENAME}_headers
             DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
         )
 
