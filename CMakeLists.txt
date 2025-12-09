@@ -383,7 +383,52 @@ function(fancyAdd_StdLayout)
         ${DEPENDENCIES}
         ${TEST}
     )")
+endfunction()
 
+function(fancy_headerTest)
+    set(options)
+    set(oneValueArgs NAME)
+    set(multiValueArgs)
+    cmake_parse_arguments(PARSE_ARGV 0 arg
+        "${options}" "${oneValueArgs}" "${multiValueArgs}"
+    )
+
+    string(REPLACE "::" ";" NAME_LIST ${arg_NAME})
+    list(LENGTH NAME_LIST len)
+    if (len EQUAL 1)
+        set(NAMESPACE)
+        list(GET NAME_LIST 0 arg_NAME)
+    elseif (len EQUAL 2)
+        list(GET NAME_LIST 0 NAMESPACE)
+        set(NAMESPACE "NAMESPACE ${NAMESPACE}")
+        list(GET NAME_LIST 1 arg_NAME)
+    else()
+        message(FATAL_ERROR "invalid name ${arg_NAME}")
+    endif()
+
+
+    string(MAKE_C_IDENTIFIER "${arg_NAME}" "arg_SAFENAME")
+
+    set(library_path "src/${arg_NAME}")
+
+    set(target_name "${arg_NAME}_test_header")
+
+    file(GLOB_RECURSE header_files LIST_DIRECTORIES false RELATIVE ${CMAKE_CURRENT_LIST_DIR}/.. ${library_path}/*.h)
+    set(files)
+    file(WRITE "test.cpp.in" "#include \"@header@\"\n")
+    foreach (header ${header_files})
+        string (REPLACE "/" "__" test_name "${header}")
+        set(cpp_file test_header_${target_name}_${test_name}.cpp)
+        configure_file(test.cpp.in ${cpp_file})
+        set(files ${files} ${cpp_file})
+    endforeach()
+
+    add_library(${target_name} ${files})
+    if ("${arg_NAMESPACE}" STREQUAL "")
+        target_link_libraries(${target_name} PUBLIC ${arg_NAME})
+    else()
+        target_link_libraries(${target_name} PUBLIC ${NAMESPACE}::${arg_NAME})
+    endif()
 endfunction()
 
 function(read_translationset_section FILE_AS_STRING)
@@ -426,6 +471,14 @@ function(read_translationset_section FILE_AS_STRING)
                 message(FATAL_ERROR "unknown type ${DEP_TYPE}")
             endif()
             read_entry(${ITEM} TEST "TEST " DEP_TEST NO NO)
+            read_entry(${ITEM} TEST_HEADER "" DEP_TEST_HEADER NO NO)
+            if ("${DEP_TEST_HEADER}")
+                cmake_language(EVAL CODE "
+                    fancy_headerTest(
+                        NAME ${DEP_NAME}
+                    )
+                ")
+            endif()
 
             cmake_language(EVAL CODE "
                 fancyAdd_StdLayout(
