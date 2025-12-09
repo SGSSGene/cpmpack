@@ -77,7 +77,7 @@ Each option object has the following layout, all keys must be complete lower-cas
     }
 ```
 
-EAch translationset object has the following layout, all keys must be complete lower-case or upper-case.
+Each translationset object has the following layout, all keys must be complete lower-case or upper-case.
 ```
     {
       "name": "myLib::myLib2",
@@ -85,9 +85,14 @@ EAch translationset object has the following layout, all keys must be complete l
       "language": "cxx_std_20",
       "dependencies": [
          "myLib::myLib"
-      ]
+      ],
+      "test": false,
+      "test_header": false,
     }
 ```
+The type of a translationset is either "executable" or "library".
+If "test" is set to true and "type" is set to "executable" it will be added via add_test.
+If "test_header" is set to true an additional header test will be performed.
 
 Each package objects has the following layout, all keys must be complete lower-case or upper-case.
 Only the `name` field is mandatory.
