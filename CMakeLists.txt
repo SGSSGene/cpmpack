@@ -240,7 +240,7 @@ endmacro()
 
 function(fancyAdd)
     set(options)
-    set(oneValueArgs LIBRARY EXECUTABLE NAMESPACE HEADER_PATH_PREFIX CPP_VERSION)
+    set(oneValueArgs LIBRARY EXECUTABLE NAMESPACE HEADER_PATH_PREFIX CPP_VERSION TEST)
     set(multiValueArgs SOURCE_FILES HEADER_FILES DEPENDENCIES)
     cmake_parse_arguments(PARSE_ARGV 0 arg
         "${options}" "${oneValueArgs}" "${multiValueArgs}"
@@ -265,6 +265,9 @@ function(fancyAdd)
         add_executable(${arg_NAME}
             ${arg_SOURCE_FILES}
         )
+        if (NOT "${arg_TEST}" STREQUAL "")
+            add_test(NAME ${arg_NAME} COMMAND ${arg_NAME})
+        endif()
     else()
         message(FATAL_ERROR "Unknown compilation type")
     endif()
@@ -313,7 +316,7 @@ endfunction()
 
 function(fancyAdd_StdLayout)
     set(options)
-    set(oneValueArgs LIBRARY EXECUTABLE CPP_VERSION)
+    set(oneValueArgs LIBRARY EXECUTABLE TEST CPP_VERSION)
     set(multiValueArgs DEPENDENCIES)
     cmake_parse_arguments(PARSE_ARGV 0 arg
         "${options}" "${oneValueArgs}" "${multiValueArgs}"
@@ -325,6 +328,10 @@ function(fancyAdd_StdLayout)
     elseif (NOT "${arg_EXECUTABLE}" STREQUAL "")
         set(arg_NAME "${arg_EXECUTABLE}")
         set(TYPE "EXECUTABLE")
+    endif()
+
+    if (NOT "${arg_TEST}" STREQUAL "")
+        set(TEST "TEST YES")
     endif()
 
     string(REPLACE "::" ";" NAME_LIST ${arg_NAME})
@@ -374,6 +381,7 @@ function(fancyAdd_StdLayout)
         ${HEADER_FILES}
         ${CPP_VERSION}
         ${DEPENDENCIES}
+        ${TEST}
     )")
 
 endfunction()
@@ -417,11 +425,14 @@ function(read_translationset_section FILE_AS_STRING)
             else()
                 message(FATAL_ERROR "unknown type ${DEP_TYPE}")
             endif()
+            read_entry(${ITEM} TEST "TEST " DEP_TEST NO NO)
+
             cmake_language(EVAL CODE "
                 fancyAdd_StdLayout(
                     ${TARGET} ${DEP_NAME}
                     CPP_VERSION ${DEP_LANGUAGE}
                     DEPENDENCIES ${DEP_DEPENDENCIES}
+                    ${DEP_TEST}
                 )
             ")
         else()
