@@ -413,17 +413,18 @@ function(fancy_headerTest)
 
     set(target_name "${arg_NAME}_test_header")
 
-    file(GLOB_RECURSE header_files LIST_DIRECTORIES false RELATIVE ${CMAKE_CURRENT_LIST_DIR}/.. ${library_path}/*.h)
+    file(GLOB_RECURSE header_files LIST_DIRECTORIES false RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/${library_path} ${library_path}/*.h)
+
     set(files)
-    file(WRITE "test.cpp.in" "#include \"@header@\"\n")
     foreach (header ${header_files})
         string (REPLACE "/" "__" test_name "${header}")
         set(cpp_file test_header_${target_name}_${test_name}.cpp)
-        configure_file(test.cpp.in ${cpp_file})
+        configure_file(${CMAKE_CURRENT_LIST_DIR}/test.cpp.in ${cpp_file})
         set(files ${files} ${cpp_file})
     endforeach()
 
     add_library(${target_name} ${files})
+    target_include_directories(${target_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${library_path})
     if ("${arg_NAMESPACE}" STREQUAL "")
         target_link_libraries(${target_name} PUBLIC ${arg_NAME})
     else()
