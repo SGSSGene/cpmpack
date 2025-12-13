@@ -1,3 +1,5 @@
+<!-- SPDX-FileCopyrightText: 2025 Simon Gene Gottlieb <license.simon@gottliebtfreitag.de>
+     SPDX-License-Identifier: CC-BY-4.0 -->
 # CPMpack
 
 Short declaration of libraries/executable and dependencies using CPM in the background.

@@ -3,9 +3,6 @@
 
 cmake_minimum_required(VERSION 3.31 FATAL_ERROR)
 
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
-
 function(read_entry ITEM FIELD PREFIX VAR_OUT WITH_QUOTES AS_LIST)
     set(RET_VALUE)
     string(JSON TYPE_VALUE ERROR_VARIABLE JSON_ERROR TYPE ${ITEM} ${FIELD})
@@ -255,7 +252,8 @@ function(fancyAdd)
             add_library(${arg_NAME} INTERFACE)
         else()
             set (TARGET_TYPE "PUBLIC")
-            add_library(${arg_NAME}
+            set (CPM_LINK_LIB_${arg_NAME} "STATIC" CACHE STRING "link library as STATIC or SHARED")
+            add_library(${arg_NAME} ${CPM_LINK_LIB_${arg_NAME}}
                 ${arg_SOURCE_FILES}
             )
         endif()
@@ -298,6 +296,9 @@ function(fancyAdd)
 
     # Install library related stuff
     if (NOT "${arg_LIBRARY}" STREQUAL "")
+        include(GNUInstallDirs)
+        include(CMakePackageConfigHelpers)
+
         # Install headers
         install(TARGETS ${arg_NAME}
             EXPORT ${arg_NAME}
@@ -308,8 +309,34 @@ function(fancyAdd)
         # Install a generated cmake file
         install(EXPORT ${arg_NAME}
             FILE ${arg_NAME}.cmake
-            DESTINATION "${CMAKE_INSTALL_DATADIR}/${arg_NAME}/cmake"
+            DESTINATION "${CMAKE_INSTALL_DATADIR}/cmake/${arg_NAME}"
             NAMESPACE "${arg_NAMESPACE}::"
+        )
+
+        execute_process(
+            COMMAND git describe --tags
+            OUTPUT_VARIABLE arg_NAME_VERSION
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            ERROR_VARIABLE VERSION_ERROR
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+
+        if(${arg_NAME_VERSION} STREQUAL "")
+            message(FATAL_ERROR "cannot generate version string")
+        endif()
+
+        message("${arg_NAME} version: " ${arg_NAME_VERSION})
+        set(VERSION ${arg_NAME_VERSION})
+
+        # Install pkgconfig file
+        configure_file(${CMAKE_CURRENT_LIST_DIR}/templates/pkgfile.pc.in ${arg_NAME}.pc @ONLY)
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${arg_NAME}.pc
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/pkgconfig
+        )
+
+        # Install license files
+        install(DIRECTORY LICENSES/
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/${PROJECT_NAME}
         )
     endif()
 endfunction()
@@ -419,7 +446,7 @@ function(fancy_headerTest)
     foreach (header ${header_files})
         string (REPLACE "/" "__" test_name "${header}")
         set(cpp_file test_header_${target_name}_${test_name}.cpp)
-        configure_file(${CMAKE_CURRENT_LIST_DIR}/test.cpp.in ${cpp_file})
+        configure_file(${CMAKE_CURRENT_LIST_DIR}/templates/entry_point_header_tests.cpp.in ${cpp_file})
         set(files ${files} ${cpp_file})
     endforeach()
 
