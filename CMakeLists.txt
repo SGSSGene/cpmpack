@@ -329,7 +329,7 @@ function(fancyAdd)
         set(VERSION ${arg_NAME_VERSION})
 
         # Install pkgconfig file
-        configure_file(${CMAKE_CURRENT_LIST_DIR}/template_pkgfile.pc.in ${arg_NAME}.pc @ONLY)
+        configure_file(${CMAKE_CURRENT_LIST_DIR}/templates/pkgfile.pc.in ${arg_NAME}.pc @ONLY)
         install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${arg_NAME}.pc
             DESTINATION ${CMAKE_INSTALL_DATADIR}/pkgconfig
         )
@@ -446,7 +446,7 @@ function(fancy_headerTest)
     foreach (header ${header_files})
         string (REPLACE "/" "__" test_name "${header}")
         set(cpp_file test_header_${target_name}_${test_name}.cpp)
-        configure_file(${CMAKE_CURRENT_LIST_DIR}/test.cpp.in ${cpp_file})
+        configure_file(${CMAKE_CURRENT_LIST_DIR}/templates/entry_point_header_tests.cpp.in ${cpp_file})
         set(files ${files} ${cpp_file})
     endforeach()
 
