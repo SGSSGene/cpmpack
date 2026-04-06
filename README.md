@@ -33,7 +33,7 @@ An example layout:
       {
           "name": "myLib::myLib",
           "type": "library",
-          "language": "cxx_std_20"
+          "language": "cxx_std_20",
       },
       {
            "if": "MYLIB_BUILD_TEST",
@@ -70,7 +70,7 @@ An example layout:
 `packages`: A list of objects. Each objects represents a `CPMAddPackage`/`CPMDeclarePackage` call.
 `dependency_files`: A list of files that should be additionally loaded.
 
-Each option object has the following layout, all keys must be complete lower-case or upper-case.
+Each entry in `options` has the following layout, all keys must be complete lower-case or upper-case.
 ```
     {
       "name": "MYLIB_BUILD_TEST",
@@ -79,7 +79,7 @@ Each option object has the following layout, all keys must be complete lower-cas
     }
 ```
 
-Each translationset object has the following layout, all keys must be complete lower-case or upper-case.
+Each entry in `translationset` has the following layout, all keys must be complete lower-case or upper-case.
 ```
     {
       "name": "myLib::myLib2",
@@ -96,7 +96,7 @@ The type of a translationset is either "executable" or "library".
 If "test" is set to true and "type" is set to "executable" it will be added via add_test.
 If "test_header" is set to true an additional header test will be performed.
 
-Each package objects has the following layout, all keys must be complete lower-case or upper-case.
+Each entry in `packages` has the following layout, all keys must be complete lower-case or upper-case.
 Only the `name` field is mandatory.
 ```
     {
