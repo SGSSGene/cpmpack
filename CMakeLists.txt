@@ -237,7 +237,7 @@ endmacro()
 
 function(fancyAdd)
     set(options)
-    set(oneValueArgs LIBRARY EXECUTABLE NAMESPACE HEADER_PATH_PREFIX CPP_VERSION TEST)
+    set(oneValueArgs LIBRARY EXECUTABLE NAMESPACE HEADER_PATH_PREFIX CPP_VERSION TEST STRICT)
     set(multiValueArgs SOURCE_FILES HEADER_FILES DEPENDENCIES)
     cmake_parse_arguments(PARSE_ARGV 0 arg
         "${options}" "${oneValueArgs}" "${multiValueArgs}"
@@ -294,6 +294,15 @@ function(fancyAdd)
         add_library(${arg_NAMESPACE}::${arg_NAME} ALIAS ${arg_NAME})
     endif()
 
+    if (arg_TEST)
+        if (WIN32)
+            target_compile_options(${arg_NAME} ${TARGET_TYPE} /bigobj /EHsc)
+        elseif (APPLE)
+        else ()
+            target_compile_options(${arg_NAME} ${TARGET_TYPE} -Wall -Werror -Wpedantic)
+        endif ()
+    endif()
+
     # Install library related stuff
     if (NOT "${arg_LIBRARY}" STREQUAL "")
         include(GNUInstallDirs)
@@ -343,7 +352,7 @@ endfunction()
 
 function(fancyAdd_StdLayout)
     set(options)
-    set(oneValueArgs LIBRARY EXECUTABLE TEST CPP_VERSION)
+    set(oneValueArgs LIBRARY EXECUTABLE TEST CPP_VERSION STRICT)
     set(multiValueArgs DEPENDENCIES)
     cmake_parse_arguments(PARSE_ARGV 0 arg
         "${options}" "${oneValueArgs}" "${multiValueArgs}"
@@ -409,6 +418,7 @@ function(fancyAdd_StdLayout)
         ${CPP_VERSION}
         ${DEPENDENCIES}
         ${TEST}
+        STRICT ${arg_STRICT}
     )")
 endfunction()
 
@@ -500,6 +510,7 @@ function(read_translationset_section FILE_AS_STRING)
             endif()
             read_entry(${ITEM} TEST "TEST " DEP_TEST NO NO)
             read_entry(${ITEM} TEST_HEADER "" DEP_TEST_HEADER NO NO)
+            read_entry(${ITEM} STRICT "" DEP_STRICT NO NO)
             if ("${DEP_TEST_HEADER}")
                 cmake_language(EVAL CODE "
                     fancy_headerTest(
@@ -513,6 +524,7 @@ function(read_translationset_section FILE_AS_STRING)
                     ${TARGET} ${DEP_NAME}
                     CPP_VERSION ${DEP_LANGUAGE}
                     DEPENDENCIES ${DEP_DEPENDENCIES}
+                    STRICT ${DEP_STRICT}
                     ${DEP_TEST}
                 )
             ")
