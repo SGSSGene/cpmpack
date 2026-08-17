@@ -314,7 +314,7 @@ function(fancyAdd)
         )
 
         execute_process(
-            COMMAND git describe --tags
+            COMMAND git describe --tags --always
             OUTPUT_VARIABLE arg_NAME_VERSION
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
             ERROR_VARIABLE VERSION_ERROR
