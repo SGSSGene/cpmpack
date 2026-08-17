@@ -314,7 +314,7 @@ function(fancyAdd)
         )
 
         execute_process(
-            COMMAND git describe --tags
+            COMMAND git describe --tags --always
             OUTPUT_VARIABLE arg_NAME_VERSION
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
             ERROR_VARIABLE VERSION_ERROR
@@ -322,7 +322,7 @@ function(fancyAdd)
         )
 
         if("${arg_NAME_VERSION}" STREQUAL "")
-            message(FATAL_ERROR "cannot generate version string for ${arg_NAME}")
+            message(FATAL_ERROR "cannot generate version string for ${arg_NAME}. Error: ${VERSION_ERROR}")
         endif()
 
         message("${arg_NAME} version: " ${arg_NAME_VERSION})
