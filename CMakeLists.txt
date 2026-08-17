@@ -322,7 +322,7 @@ function(fancyAdd)
         )
 
         if("${arg_NAME_VERSION}" STREQUAL "")
-            message(FATAL_ERROR "cannot generate version string for ${arg_NAME}")
+            message(FATAL_ERROR "cannot generate version string for ${arg_NAME}. Error: ${VERSION_ERROR}")
         endif()
 
         message("${arg_NAME} version: " ${arg_NAME_VERSION})
