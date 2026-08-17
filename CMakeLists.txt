@@ -321,8 +321,8 @@ function(fancyAdd)
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
 
-        if(${arg_NAME_VERSION} STREQUAL "")
-            message(FATAL_ERROR "cannot generate version string")
+        if("${arg_NAME_VERSION}" STREQUAL "")
+            message(FATAL_ERROR "cannot generate version string for ${arg_NAME}")
         endif()
 
         message("${arg_NAME} version: " ${arg_NAME_VERSION})
